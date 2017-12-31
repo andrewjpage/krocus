@@ -63,19 +63,11 @@ class Fastq:
 				continue
 				
 			block_start, block_end = self.find_largest_block(sequence_hits)
-			block_start *= self.k
-			block_end *= self.k
-			if block_start - self.margin < 0:
-				block_start = 0
-			else:
-				block_start -= self.margin
-			
+			block_start = self.adjust_block_start(block_start)
+
 			if block_end == 0:
 				continue
-			elif block_end + self.margin > seq_length:
-				block_end = seq_length
-			else:
-				block_end +=  self.margin
+			block_end = self.adjust_block_end(block_end,seq_length)
 
 			block_kmers = self.create_kmers_for_block(block_start, block_end, sequence)
 			self.apply_kmers_to_genes(fasta_obj,block_kmers)
@@ -85,7 +77,23 @@ class Fastq:
 				with open(self.filtered_reads_file, 'a+') as output_fh:
 					output_fh.write(str(read.subsequence(block_start, block_end)))
 			
-				
+	def adjust_block_start(self,block_start):
+		block_start *= self.k
+		if block_start - self.margin < 0:
+			block_start = 0
+		else:
+			block_start -= self.margin
+		return block_start
+		
+	def adjust_block_end(self,block_end,seq_length):
+		block_end *= self.k
+		if block_end + self.margin > seq_length:
+			block_end = seq_length
+		else:
+			block_end +=  self.margin
+		return block_end
+			
+			
 	def create_kmers_for_block(self, block_start, block_end, sequence):
 		if block_end ==  0:
 			return {}
@@ -174,7 +182,9 @@ class Fastq:
 		for a in alleles:
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
+		self.output_st_and_alleles(st, alleles)
 		
+	def output_st_and_alleles(self, st, alleles):
 		allele_string = str(st)+"\t" 
 		for a in alleles:
 			allele_string += str(a)+"\t"		
@@ -182,8 +192,7 @@ class Fastq:
 			with open(self.output_file, 'a+') as output_fh:
 				output_fh.write(allele_string + "\n")			
 		else:
-			print(allele_string)
-				
+			print(allele_string)	
 		# minority variants
 	
 	# Derived from https://github.com/sanger-pathogens/Fastaq
