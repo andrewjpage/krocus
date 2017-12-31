@@ -1,0 +1,22 @@
+import os
+import argparse
+
+class InputTypes:
+	
+	'''The input file should exist'''
+	def is_fastq_file_valid(filename):
+		if not os.path.exists(filename):
+			raise argparse.ArgumentTypeError('Cannot access input file')
+		return filename
+		
+	def is_allele_directory_valid(filename):
+		if not os.path.exists(filename):
+			raise argparse.ArgumentTypeError("The output directory already exists")
+		return filename
+		
+	def is_kmer_valid(value_str):
+		if value_str.isdigit():
+			kmer = int(value_str)
+			if kmer%2 == 1 and kmer >= 5 and kmer <= 31:
+				return kmer
+		raise argparse.ArgumentTypeError("Invalid Kmer value, it must be an odd integer between 5 and 31.")
