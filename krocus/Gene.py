@@ -21,7 +21,7 @@ class Gene:
 		return int(re.split('\.|-|_',self.name)[-1])
 				
 	def allele_name(self):
-		regex = r"(.+)[\.-_]" + str(self.allele_number() )
+		regex = r"(.+)[\.\-_]" + str(self.allele_number() )
 		
 		m = re.search(regex, self.name)
 		 
