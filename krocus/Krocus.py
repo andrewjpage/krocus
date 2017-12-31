@@ -39,6 +39,6 @@ class Krocus:
 
 	def mlst_profile_file(self):
 		profile_txt = os.path.join(self.allele_directory, 'profile.txt')
-		if not os.path.exists(profile_text):
+		if not os.path.exists(profile_txt):
 			self.logger.error("The MLST profile file cannot be accessed: "+ profile_txt)
 		return profile_txt
