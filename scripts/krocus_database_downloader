@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+import os
+import pkg_resources
+sys.path.append('../')
+sys.path.append('./')
+from krocus.KrocusDatabaseDownloader import KrocusDatabaseDownloader
+from krocus.InputTypes import InputTypes
+
+version = ''
+try:
+	version = pkg_resources.get_distribution("krocus").version
+except pkg_resources.DistributionNotFound:
+	version = 'x.y.z'
+
+parser = argparse.ArgumentParser(
+	description = 'Download ',
+	usage = 'krocus_database_downloader [options]',
+	formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+parser.add_argument('--list_species',	 '-l', help='List all available species', action='store_true' , default = False)
+
+parser.add_argument('--species',	 '-s', help='Species to download' )
+parser.add_argument('--output_directory',	 '-o', help='Output directory', default = 'mlst_files' )
+
+parser.add_argument('--verbose', '-v', action='store_true', help='Turn on debugging')
+parser.add_argument('--version', action='version', version=str(version))
+
+options = parser.parse_args()
+
+krocus = KrocusDatabaseDownloader(options)
+krocus.run()

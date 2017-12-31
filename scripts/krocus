@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+import os
+import pkg_resources
+sys.path.append('../')
+sys.path.append('./')
+from krocus.Krocus import Krocus
+from krocus.InputTypes import InputTypes
+
+version = ''
+try:
+	version = pkg_resources.get_distribution("krocus").version
+except pkg_resources.DistributionNotFound:
+	version = 'x.y.z'
+
+parser = argparse.ArgumentParser(
+	description = 'multi-locus sequence typing (MLST) from uncorrected long reads',
+	usage = 'krocus [options] allele_directory input.fastq')
+parser.add_argument('allele_directory', help='Allele directory', type=InputTypes.is_allele_directory_valid )
+parser.add_argument('input_fastq', help='Input FASTQ file (optionally gzipped)', type=InputTypes.is_fastq_file_valid)
+
+parser.add_argument('--min_fasta_hits',	 '-m', help='Minimum No. of kmers matching a read', type=int, default = 10)
+parser.add_argument('--print_interval',	 '-p', help='Print ST every this number of reads', type=int, default = 200)
+
+parser.add_argument('--kmer',	 '-k', help='Kmer size [%(default)s]', type=InputTypes.is_kmer_valid, default = 11)
+parser.add_argument('--verbose', '-v', action='store_true', help='Turn on debugging [%(default)s]', default = 0)
+parser.add_argument('--version', action='version', version=str(version))
+
+options = parser.parse_args()
+
+krocus = Krocus(options)
+krocus.run()
