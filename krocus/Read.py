@@ -4,7 +4,7 @@
 # GNU GPL version 3	
 	
 class Read:
-	def __init__(self, id = '', seq = '', qual = ''):
+	def __init__(self, id = None, seq = None, qual = None):
 		self.id = id
 		self.seq = seq
 		self.qual = qual

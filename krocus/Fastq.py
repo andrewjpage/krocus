@@ -3,6 +3,7 @@ from Bio import SeqIO
 from krocus.Kmers import Kmers
 from krocus.Read import Read
 from krocus.Gene import Gene
+from krocus.Blocks import Blocks
 import subprocess
 import numpy
 
@@ -30,7 +31,6 @@ class Fastq:
 		fh = self.open_file_read()
 		read = Read()
 		
-		
 		while read.get_next_from_file(fh):
 			counter += 1
 			self.map_kmers_to_read(read.seq, read)
@@ -40,7 +40,6 @@ class Fastq:
 		self.full_gene_coverage()
 								
 		return self
-		
 		
 	def map_kmers_to_read(self, sequence,read):
 		seq_length = len(sequence)
@@ -54,7 +53,7 @@ class Fastq:
 			
 			sequence_hits = numpy.zeros(int(seq_length/self.k)+1, dtype=int)
 			hit_counter = 0
-			for i in range(0,end):
+			for i in range(0, end):
 				if read_kmers[i] in fasta_kmers:
 					hit_counter += 1
 					sequence_hits[int(i/self.k)] += 1
@@ -62,12 +61,13 @@ class Fastq:
 			if hit_counter < self.min_fasta_hits:
 				continue
 				
-			block_start, block_end = self.find_largest_block(sequence_hits)
-			block_start = self.adjust_block_start(block_start)
+			blocks_obj = Blocks(self.k, self.min_block_size, self.max_gap, self.margin)
+			block_start, block_end = blocks_obj.find_largest_block(sequence_hits)
+			block_start = blocks_obj.adjust_block_start(block_start)
 
 			if block_end == 0:
 				continue
-			block_end = self.adjust_block_end(block_end,seq_length)
+			block_end = blocks_obj.adjust_block_end(block_end,seq_length)
 
 			block_kmers = self.create_kmers_for_block(block_start, block_end, sequence)
 			self.apply_kmers_to_genes(fasta_obj,block_kmers)
@@ -76,22 +76,6 @@ class Fastq:
 			if self.filtered_reads_file:
 				with open(self.filtered_reads_file, 'a+') as output_fh:
 					output_fh.write(str(read.subsequence(block_start, block_end)))
-			
-	def adjust_block_start(self,block_start):
-		block_start *= self.k
-		if block_start - self.margin < 0:
-			block_start = 0
-		else:
-			block_start -= self.margin
-		return block_start
-		
-	def adjust_block_end(self,block_end,seq_length):
-		block_end *= self.k
-		if block_end + self.margin > seq_length:
-			block_end = seq_length
-		else:
-			block_end +=  self.margin
-		return block_end
 			
 			
 	def create_kmers_for_block(self, block_start, block_end, sequence):
@@ -102,53 +86,6 @@ class Fastq:
 			
 		kmers_obj = Kmers(block_seq, self.k)
 		return kmers_obj.get_all_kmers()
-				
-		
-	def merge_blocks(self, blocks):
-		for i in range(0,len(blocks)-1 ):
-			if blocks[i][1] + self.max_gap > blocks[i+1][0]:
-				if blocks[i][1]  < blocks[i+1][1]:
-					blocks[i][1] = 	blocks[i+1][1]
-				blocks[i+1][0] = blocks[i][0]
-				blocks[i+1][1] = blocks[i][1]
-		return blocks
-		
-	
-	def find_largest_block(self, sequence_hits):
-		blocks = self.find_all_blocks(sequence_hits)
-		merged_blocks = self.merge_blocks(blocks)
-		
-		largest_block = 0
-		largest_block_index = 0
-		
-		for i, block in enumerate(merged_blocks):
-			block_size = block[1] - block[0]
-			if block_size > largest_block:
-				largest_block_index = i
-				largest_block = block_size
-				
-		if largest_block < (self.min_block_size/self.k):
-			return 0,0
-				
-		return merged_blocks[largest_block_index][0], merged_blocks[largest_block_index][1]
-		
-	def find_all_blocks(self, sequence_hits):
-		blocks = []
-		in_block = False
-		current_block_start = 0
-		for i,val_count in enumerate(sequence_hits):
-			
-			if not in_block and val_count > 0:
-				in_block = True
-				current_block_start = i
-			elif in_block and val_count == 0: 
-				in_block = False
-				blocks.append([current_block_start, i])
-				
-		if in_block:
-			blocks.append([current_block_start, len(sequence_hits)])
-				
-		return blocks	
 	
 		# {'gene1': {'AAAA': 1}, 'gene2': {'TTTT': 1}, 'gene3': {'CCCC': 1}}
 	def apply_kmers_to_genes(self,fasta_obj,hit_kmers):
