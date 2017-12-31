@@ -9,7 +9,7 @@ import numpy
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -17,6 +17,8 @@ class Fastq:
 		self.min_fasta_hits = min_fasta_hits
 		self.mlst_profile = mlst_profile
 		self.print_interval = print_interval
+		self.output_file = output_file
+		self.filtered_reads_file = filtered_reads_file
 		self.max_gap = 4 # multiples of the kmer
 		self.min_block_size = 150
 		self.margin = 100
@@ -31,19 +33,22 @@ class Fastq:
 		
 		while read.get_next_from_file(fh):
 			counter += 1
-			self.map_kmers_to_read(read.seq)
+			self.map_kmers_to_read(read.seq, read)
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage()
+				
+		self.full_gene_coverage()
 								
 		return self
 		
 		
-	def map_kmers_to_read(self, sequence):
+	def map_kmers_to_read(self, sequence,read):
 		seq_length = len(sequence)
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
 		read_kmers = kmers_obj.get_all_kmers_array()
+		is_read_matching = False
 		
 		for (fasta_obj, fasta_kmers) in self.fasta_kmers.items():
 			
@@ -74,6 +79,11 @@ class Fastq:
 
 			block_kmers = self.create_kmers_for_block(block_start, block_end, sequence)
 			self.apply_kmers_to_genes(fasta_obj,block_kmers)
+			is_read_matching = True
+			
+			if self.filtered_reads_file:
+				with open(self.filtered_reads_file, 'a+') as output_fh:
+					output_fh.write(str(read.subsequence(block_start, block_end)))
 			
 				
 	def create_kmers_for_block(self, block_start, block_end, sequence):
@@ -164,10 +174,17 @@ class Fastq:
 		for a in alleles:
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
-		print(str(st)+"\t", end='')
+		
+		allele_string = str(st)+"\t" 
 		for a in alleles:
-			print(str(a)+"\t", end='')
-		print("")
+			allele_string += str(a)+"\t"		
+		if self.output_file:
+			with open(self.output_file, 'a+') as output_fh:
+				output_fh.write(allele_string + "\n")			
+		else:
+			print(allele_string)
+				
+		# minority variants
 	
 	# Derived from https://github.com/sanger-pathogens/Fastaq
 	# Author: Martin Hunt	

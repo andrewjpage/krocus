@@ -18,7 +18,7 @@ class TestFastq(unittest.TestCase):
 		fastas = Fastas(logger, data_dir,4, 1)
 		mlst_profile = MlstProfile(data_dir+'/profile.txt')
 		
-		fastq = Fastq(logger, os.path.join(data_dir,'query.fastq'), 4 , fastas.get_fastas_to_kmers(), 1,  mlst_profile, 100)
+		fastq = Fastq(logger, os.path.join(data_dir,'query.fastq'), 4 , fastas.get_fastas_to_kmers(), 1,  mlst_profile, 100, None, None)
 				
 		self.assertTrue(fastq.initial_read_filter())
 		
@@ -31,7 +31,7 @@ class TestFastq(unittest.TestCase):
 		pr = cProfile.Profile()
 		pr.enable()
 		
-		fastq = Fastq(logger, os.path.join(data_dir,'pacbio.fastq'), kmer , fastas.get_fastas_to_kmers(), 5,  mlst_profile, 100)
+		fastq = Fastq(logger, os.path.join(data_dir,'pacbio.fastq'), kmer , fastas.get_fastas_to_kmers(), 5,  mlst_profile, 100, None, None)
 		fastq.initial_read_filter()
 		
 		pr.disable()

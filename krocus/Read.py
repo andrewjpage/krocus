@@ -4,10 +4,13 @@
 # GNU GPL version 3	
 	
 class Read:
-	def __init__(self):
-		self.id = ''
-		self.seq = ''
-		self.qual = ''
+	def __init__(self, id = '', seq = '', qual = ''):
+		self.id = id
+		self.seq = seq
+		self.qual = qual
+		
+	def subsequence(self, start,end):
+		return Read(id = self.id+"_"+str(start)+"_"+str(end), seq = self.seq[start:end], qual = self.qual[start:end])
 		
 	def __str__(self):
 		return '@' + self.id + '\n' + self.seq + '\n+\n' + self.qual + '\n'

@@ -21,5 +21,12 @@ class Gene:
 		return int(re.split('\.|-|_',self.name)[-1])
 				
 	def allele_name(self):
-		return str(re.split('\.|-|_',self.name)[0])
+		regex = r"(.+)[\.-_]" + str(self.allele_number() )
+		
+		m = re.search(regex, self.name)
+		 
+		if m.group:
+			return m.group(1)
+		else:
+			return ''
 		
