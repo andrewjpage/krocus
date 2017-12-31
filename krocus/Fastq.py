@@ -5,6 +5,7 @@ from krocus.Read import Read
 from krocus.Gene import Gene
 from krocus.Blocks import Blocks
 import subprocess
+import os
 import numpy
 
 class Error (Exception): pass

@@ -9,16 +9,14 @@ class Fastas:
 		self.allele_directory = allele_directory
 		self.filenames = self.allele_filenames(allele_directory)
 		self.k = k
-		self.num_top_kmers = num_top_kmers
 		self.fastas_to_top_kmers = {}
 		self.fastas_to_kmers = self.get_fastas_to_kmers()
 
 	def get_fastas_to_kmers(self):
 		fastas_to_kmers = {}
 		for f in self.filenames:
-			fasta_obj = Fasta(self.logger, f, self.k,self.num_top_kmers)
+			fasta_obj = Fasta(self.logger, f, self.k)
 			fastas_to_kmers[fasta_obj] = fasta_obj.all_kmers
-			self.fastas_to_top_kmers[fasta_obj] = fasta_obj.top_kmers
 		return fastas_to_kmers
 
 	def allele_filenames(self,allele_directory):

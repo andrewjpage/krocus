@@ -4,15 +4,13 @@ from Bio import SeqIO
 from krocus.Kmers import Kmers
 
 class Fasta:
-	def __init__(self,logger, filename, k, num_top_kmers):
+	def __init__(self,logger, filename, k):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
-		self.num_top_kmers = num_top_kmers
 	
 		self.sequences_to_kmers = self.sequence_kmers()
 		self.all_kmers = self.all_kmers_in_file()
-		self.top_kmers = self.top_kmers_in_file()
 		self.avg_gene_length = 0
 
 	def sequence_kmers(self):
@@ -42,19 +40,7 @@ class Fasta:
 				else:
 					all_kmers[kmer] = 1
 		return all_kmers
-  	
-	# With MLST most of the sequences will be near identical with just 1 SNP difference so keep a few top ones
-	# as a quick filter
-	def top_kmers_in_file(self):
-		top = []
-		
-		loop_count = 0 
-		for (k_key, k_count) in sorted(self.all_kmers.items(), key=operator.itemgetter(1), reverse=True):
-			if loop_count >= self.num_top_kmers:
-				break
-			top.append(k_key)
-			loop_count += 1 
-		return top
+
 		
 		
 		

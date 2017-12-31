@@ -93,4 +93,7 @@ __output_file__: By default the predicted sequence types are printed to screen (
 
 __print_interval__: Print out the predicted sequence type every X number of reads. This is where you are performing analysis in real time and want a quick result.
 
+# Resource usage
+For an 800Mbyte FASTQ file (unzipped) of long reads from an Oxford nanopore MinION containing Salmonella required 550MB of RAM.
+
 
