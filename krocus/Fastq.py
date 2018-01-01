@@ -49,6 +49,10 @@ class Fastq:
 		return self
 		
 	def does_read_contain_quick_pass_kmers(self, sequence):
+		seq_length = len(sequence)
+		if seq_length < self.min_block_size:
+			return False
+		
 		kmers_obj = Kmers(sequence, self.k)
 		read_onex_kmers = kmers_obj.get_one_x_coverage_of_kmers()
 		
@@ -58,16 +62,12 @@ class Fastq:
 				if r in fasta_kmers:
 					hit_counter += 1
 			
-					if hit_counter > 1:
+					if hit_counter > self.min_kmers_for_onex_pass:
 						return True
 		
 		return False
 		
-	def map_kmers_to_read(self, sequence,read):
-		seq_length = len(sequence)
-		if seq_length < self.min_block_size:
-			return
-			
+	def map_kmers_to_read(self, sequence,read):			
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
