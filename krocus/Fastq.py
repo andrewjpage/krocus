@@ -127,6 +127,7 @@ class Fastq:
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
 		self.output_st_and_alleles(st, alleles)
+		self.output_target_st(st)
 		
 	def output_target_st(self,st):
 		if not self.target_st:
