@@ -16,7 +16,10 @@ class Krocus:
 		self.print_interval             = options.print_interval
 		self.output_file                = options.output_file
 		self.filtered_reads_file        = options.filtered_reads_file
-		self.num_top_kmers              = 5 # may not be needed
+		self.target_st                  = options.target_st
+		self.max_gap                    = options.max_gap
+		self.min_block_size             = options.min_block_size
+		self.margin                     = options.margin
 		
 		if self.output_file and os.path.exists(self.output_file):
 			self.logger.error("The output file already exists, please choose another filename: "+ self.output_file)
@@ -33,8 +36,8 @@ class Krocus:
 			
 	def run(self):
 		mlst_profile = MlstProfile(self.mlst_profile_file())
-		fastas = Fastas(self.logger, self.allele_directory, self.kmer, self.num_top_kmers)
-		fastq = Fastq(self.logger, self.input_fastq, self.kmer, fastas.get_fastas_to_kmers(), self.min_fasta_hits , mlst_profile, self.print_interval, self.output_file, self.filtered_reads_file)
+		fastas = Fastas(self.logger, self.allele_directory, self.kmer)
+		fastq = Fastq(self.logger, self.input_fastq, self.kmer, fastas.get_fastas_to_kmers(), self.min_fasta_hits , mlst_profile, self.print_interval, self.output_file, self.filtered_reads_file, target_st = self.target_st, max_gap = self.max_gap, min_block_size = self.min_block_size, margin = self.margin)
 		fastq.initial_read_filter()
 
 	def mlst_profile_file(self):
@@ -42,3 +45,4 @@ class Krocus:
 		if not os.path.exists(profile_txt):
 			self.logger.error("The MLST profile file cannot be accessed: "+ profile_txt)
 		return profile_txt
+		

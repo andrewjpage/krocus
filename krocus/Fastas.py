@@ -4,12 +4,11 @@ from Bio import SeqIO
 from krocus.Fasta import Fasta
 
 class Fastas:
-	def __init__(self,logger, allele_directory, k, num_top_kmers):
+	def __init__(self,logger, allele_directory, k):
 		self.logger = logger
 		self.allele_directory = allele_directory
 		self.filenames = self.allele_filenames(allele_directory)
 		self.k = k
-		self.fastas_to_top_kmers = {}
 		self.fastas_to_kmers = self.get_fastas_to_kmers()
 
 	def get_fastas_to_kmers(self):

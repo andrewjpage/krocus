@@ -11,7 +11,7 @@ import numpy
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -21,9 +21,9 @@ class Fastq:
 		self.print_interval = print_interval
 		self.output_file = output_file
 		self.filtered_reads_file = filtered_reads_file
-		self.max_gap = 4 # multiples of the kmer
-		self.min_block_size = 150
-		self.margin = 100
+		self.max_gap = max_gap # multiples of the kmer
+		self.min_block_size = min_block_size
+		self.margin = margin
 
 	def initial_read_filter(self):
 		counter = 0 
@@ -101,17 +101,21 @@ class Fastq:
 			largest_gene = 0
 			largest_gene_name = ''
 			largest_zero = 0
+			largest_average_kmer_coverage = 0
 			for (gene_name, kmers_dict) in fasta_obj.sequences_to_kmers.items():
 				kv = kmers_dict.values()
+				
+				average_kmer_coverage = sum(kv)/len(kv)
 				
 				kv_coverage = [x for x in kv if x >= 1]
 				kv_zero = [x for x in kv if x == 0]
 				kl  = len(kv_coverage)
 				kz = len(kv_zero)
-				if kl > largest_gene:
+				if kl >= largest_gene and average_kmer_coverage > largest_average_kmer_coverage:
 					largest_gene = kl
 					largest_gene_name = gene_name
 					largest_zero = kz
+					largest_average_kmer_coverage = average_kmer_coverage
 	
 			if largest_gene_name != '':
 				alleles.append(Gene(largest_gene_name, largest_gene, largest_zero))

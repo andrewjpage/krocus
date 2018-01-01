@@ -1,3 +1,20 @@
+  11 efaecalis
+  16 sdysgalactiae
+  22 paeruginosa
+  48 senterica
+  48 spyogenes
+ 113 kpneumoniae
+ 114 saureus
+ 226 ecoli
+
+
+Where number of strains is greater than 10.
+
+table:
+species, No samples, no. STs, % correct, Avg time
+
+
+
 # Krocus
 Given some raw uncorrected long reads, such as those from PacBio or Oxford Nanopore, calculate the multi-locus sequence type (MLST).
 
@@ -94,6 +111,6 @@ __output_file__: By default the predicted sequence types are printed to screen (
 __print_interval__: Print out the predicted sequence type every X number of reads. This is where you are performing analysis in real time and want a quick result.
 
 # Resource usage
-For an 800Mbyte FASTQ file (unzipped) of long reads from an Oxford nanopore MinION containing Salmonella required 550MB of RAM.
+For an 550Mbyte FASTQ file (unzipped) of long reads from a Pacbio RSII containing Salmonella required 550MB of RAM.
 
 

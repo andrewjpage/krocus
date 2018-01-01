@@ -10,5 +10,5 @@ class TestFastas(unittest.TestCase):
 
 	def test_four_kmers(self):
 		logger = logging.getLogger(__name__)
-		f = Fastas(logger, data_dir,4, 1)
+		f = Fastas(logger, data_dir,4)
 		self.assertEqual(list(f.fastas_to_kmers.values()), [{'AAAA': 1, 'TTTT': 1, 'CCCC': 1}, {'GGGG': 1, 'ATAT': 1, 'TATA': 1, 'CCCC': 1}])
