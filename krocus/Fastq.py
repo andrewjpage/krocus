@@ -26,7 +26,7 @@ class Fastq:
 		self.min_block_size = min_block_size
 		self.margin = margin
 		self.start_time = start_time
-		self.min_kmers_for_onex_pass = 1
+		self.min_kmers_for_onex_pass = min_kmers_for_onex_pass
 
 	def initial_read_filter(self):
 		counter = 0 
@@ -34,20 +34,14 @@ class Fastq:
 		
 		fh = self.open_file_read()
 		read = Read()
-		
-		read_pass =0
-		read_skip = 0
-		
+
 		while read.get_next_from_file(fh):
-			print(str(read_skip)+"\t"+str(read_pass))
 			counter += 1
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
 			if not self.does_read_contain_quick_pass_kmers(read.seq):
-				read_pass += 1
 				continue			
 			
-			read_skip += 1 
 			self.map_kmers_to_read(read.seq, read)
 				
 		self.full_gene_coverage(counter)
