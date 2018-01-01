@@ -39,9 +39,9 @@ class Fastq:
 			counter += 1
 			self.map_kmers_to_read(read.seq, read)
 			if counter % self.print_interval == 0:
-				self.full_gene_coverage()
+				self.full_gene_coverage(counter)
 				
-		self.full_gene_coverage()
+		self.full_gene_coverage(counter)
 								
 		return self
 		
@@ -98,7 +98,7 @@ class Fastq:
 				if kmer in hit_kmers:
 					fasta_obj.sequences_to_kmers[gene_name][kmer] += 1 
 		
-	def full_gene_coverage(self):
+	def full_gene_coverage(self, counter):
 		alleles = []
 		for fasta_obj in self.fasta_kmers.keys():
 			largest_gene = 0
@@ -128,15 +128,15 @@ class Fastq:
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
 		self.output_st_and_alleles(st, alleles)
-		self.output_target_st(st)
+		self.output_target_st(st, counter)
 		
-	def output_target_st(self,st):
+	def output_target_st(self,st,counter):
 		if not self.target_st:
 			return
 			
 		if str(st) == str(self.target_st):
 			running_time = int(time.time()) - self.start_time
-			print("TimeToTargetST:\t"+ str(running_time)+ "\t"+ self.filename)
+			print("TimeToTargetST:\t"+ str(running_time)+ "\t"+ str(counter)+ "\t"+ self.filename)
 			self.target_st = None
 		
 	def output_st_and_alleles(self, st, alleles):
