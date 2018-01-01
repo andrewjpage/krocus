@@ -22,6 +22,7 @@ class Fastq:
 		self.print_interval = print_interval
 		self.output_file = output_file
 		self.filtered_reads_file = filtered_reads_file
+		self.target_st = target_st
 		self.max_gap = max_gap # multiples of the kmer
 		self.min_block_size = min_block_size
 		self.margin = margin
