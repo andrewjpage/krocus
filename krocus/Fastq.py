@@ -144,6 +144,8 @@ class Fastq:
 				print(output_string)
 
 			self.target_st = None
+			# Stop once we have the target ST
+			sys.exit(0)
 		
 	def output_st_and_alleles(self, st, alleles):
 		allele_string = str(st)+"\t" 
