@@ -7,11 +7,12 @@ from krocus.Blocks import Blocks
 import subprocess
 import os
 import numpy
+import time
 
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -24,6 +25,7 @@ class Fastq:
 		self.max_gap = max_gap # multiples of the kmer
 		self.min_block_size = min_block_size
 		self.margin = margin
+		self.start_time = start_time
 
 	def initial_read_filter(self):
 		counter = 0 
@@ -125,6 +127,15 @@ class Fastq:
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
 		self.output_st_and_alleles(st, alleles)
+		
+	def output_target_st(self,st):
+		if not self.target_st:
+			return
+			
+		if str(st) == str(self.target_st):
+			running_time = int(time.time()) - self.start_time
+			print("TimeToTargetST:\t"+ running_time+ "\t"+ self.filename)
+			self.target_st = None
 		
 	def output_st_and_alleles(self, st, alleles):
 		allele_string = str(st)+"\t" 
