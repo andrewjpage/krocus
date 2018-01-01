@@ -21,3 +21,11 @@ class Kmers:
 		for i in range(0,end):
 			kmers.append( self.sequence[i:i+self.k] )
 		return kmers
+		
+	def get_one_x_coverage_of_kmers(self):
+		kmers = []
+		
+		end = len(self.sequence) - self.k
+		for i in range(0,end, self.k):
+			kmers.append( self.sequence[i:i+self.k] )
+		return kmers

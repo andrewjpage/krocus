@@ -1,5 +1,4 @@
 '''Read in a FASTQ file and identify matching alleles'''
-from Bio import SeqIO
 from krocus.Kmers import Kmers
 from krocus.Read import Read
 from krocus.Gene import Gene
@@ -12,7 +11,7 @@ import time
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0, min_kmers_for_onex_pass = 1 ):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -27,6 +26,7 @@ class Fastq:
 		self.min_block_size = min_block_size
 		self.margin = margin
 		self.start_time = start_time
+		self.min_kmers_for_onex_pass = 1
 
 	def initial_read_filter(self):
 		counter = 0 
@@ -35,18 +35,45 @@ class Fastq:
 		fh = self.open_file_read()
 		read = Read()
 		
+		read_pass =0
+		read_skip = 0
+		
 		while read.get_next_from_file(fh):
+			print(str(read_skip)+"\t"+str(read_pass))
 			counter += 1
-			self.map_kmers_to_read(read.seq, read)
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
+			if not self.does_read_contain_quick_pass_kmers(read.seq):
+				read_pass += 1
+				continue			
+			
+			read_skip += 1 
+			self.map_kmers_to_read(read.seq, read)
 				
 		self.full_gene_coverage(counter)
 								
 		return self
 		
+	def does_read_contain_quick_pass_kmers(self, sequence):
+		kmers_obj = Kmers(sequence, self.k)
+		read_onex_kmers = kmers_obj.get_one_x_coverage_of_kmers()
+		
+		for fasta_kmers in self.fasta_kmers.values():
+			hit_counter = 0
+			for r in read_onex_kmers:
+				if r in fasta_kmers:
+					hit_counter += 1
+			
+					if hit_counter > 1:
+						return True
+		
+		return False
+		
 	def map_kmers_to_read(self, sequence,read):
 		seq_length = len(sequence)
+		if seq_length < self.min_block_size:
+			return
+			
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
