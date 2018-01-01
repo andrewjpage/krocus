@@ -136,7 +136,7 @@ class Fastq:
 			
 		if str(st) == str(self.target_st):
 			running_time = int(time.time()) - self.start_time
-			print("TimeToTargetST:\t"+ running_time+ "\t"+ self.filename)
+			print("TimeToTargetST:\t"+ str(running_time)+ "\t"+ self.filename)
 			self.target_st = None
 		
 	def output_st_and_alleles(self, st, alleles):
