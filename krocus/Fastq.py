@@ -68,6 +68,7 @@ class Fastq:
 		return False
 		
 	def map_kmers_to_read(self, sequence,read):			
+		seq_length = len(sequence)
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
