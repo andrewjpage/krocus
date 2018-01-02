@@ -15,7 +15,7 @@ class TestFastq(unittest.TestCase):
 
 	def test_four_kmers(self):
 		logger = logging.getLogger(__name__)
-		fastas = Fastas(logger, data_dir,4)
+		fastas = Fastas(logger, data_dir,4, False)
 		mlst_profile = MlstProfile(data_dir+'/profile.txt')
 		
 		fastq = Fastq(logger, os.path.join(data_dir,'query.fastq'), 4 , fastas.get_fastas_to_kmers(), 1,  mlst_profile, 100, None, None)
@@ -25,7 +25,7 @@ class TestFastq(unittest.TestCase):
 	def test_salmonella_welt_pacbio(self):
 		logger = logging.getLogger(__name__)
 		kmer = 11
-		fastas = Fastas(logger, data_dir,kmer)
+		fastas = Fastas(logger, data_dir,kmer, False)
 		mlst_profile = MlstProfile(data_dir+'/profile.txt')
 
 		pr = cProfile.Profile()

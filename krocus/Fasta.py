@@ -4,30 +4,30 @@ from Bio import SeqIO
 from krocus.Kmers import Kmers
 
 class Fasta:
-	def __init__(self,logger, filename, k):
+	def __init__(self,logger, filename, k, divisible_by_3):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
+		self.divisible_by_3 = divisible_by_3
 	
 		self.sequences_to_kmers = self.sequence_kmers()
 		self.all_kmers = self.all_kmers_in_file()
-		self.avg_gene_length = 0
 
 	def sequence_kmers(self):
-		total_sequence_length = 0 
 		seq_counter = 0
 		
 		kmer_to_sequences = {}
 		for record in SeqIO.parse(self.filename, "fasta"):
+			sequence_length  = len(record.seq)
+			if self.divisible_by_3 and sequence_length % 3 != 0:
+				self.logger.warning("Excluding gene as it is not divisible by 3:"+record.id)
+				continue
+			
 			kmers = Kmers(str(record.seq), self.k)
 			# We assume here that the sequence name is unique in the FASTA file
 			kmer_to_sequences[record.id] = kmers.get_all_kmers()
 			
-			total_sequence_length  += len(record.seq)
 			seq_counter += 1
-			
-		if seq_counter > 0:
-			self.avg_gene_length  = total_sequence_length/seq_counter
 			
 		return kmer_to_sequences
 		
