@@ -7,6 +7,7 @@ import subprocess
 import os
 import numpy
 import time
+import sys
 
 class Error (Exception): pass
 
