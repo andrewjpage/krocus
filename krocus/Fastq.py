@@ -41,14 +41,14 @@ class Fastq:
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
 				
-			if not self.does_read_contain_quick_pass_kmers(read.seq):
+			if self.does_read_contain_quick_pass_kmers(read.seq):
 				if self.map_kmers_to_read(read.seq, read):
 					# the read mapped in one direction so lets skip to the next read.
 					continue
 			
 			# reads can go both ways, so check each orientation
 			reverse_read = read.reverse_read()
-			if not self.does_read_contain_quick_pass_kmers(reverse_read.seq):
+			if self.does_read_contain_quick_pass_kmers(reverse_read.seq):
 				self.map_kmers_to_read(reverse_read.seq, reverse_read)
 				
 		self.full_gene_coverage(counter)
