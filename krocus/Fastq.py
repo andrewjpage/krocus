@@ -31,7 +31,7 @@ class Fastq:
 
 	def initial_read_filter(self):
 		counter = 0 
-		match_counter =0
+		match_counter = 0
 		
 		fh = self.open_file_read()
 		read = Read()
@@ -40,10 +40,16 @@ class Fastq:
 			counter += 1
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
+				
 			if not self.does_read_contain_quick_pass_kmers(read.seq):
-				continue			
+				if self.map_kmers_to_read(read.seq, read):
+					# the read mapped in one direction so lets skip to the next read.
+					continue
 			
-			self.map_kmers_to_read(read.seq, read)
+			# reads can go both ways, so check each orientation
+			reverse_read = read.reverse_read()
+			if not self.does_read_contain_quick_pass_kmers(reverse_read.seq):
+				self.map_kmers_to_read(reverse_read.seq, reverse_read)
 				
 		self.full_gene_coverage(counter)
 								
@@ -103,6 +109,7 @@ class Fastq:
 			if self.filtered_reads_file:
 				with open(self.filtered_reads_file, 'a+') as output_fh:
 					output_fh.write(str(read.subsequence(block_start, block_end)))
+		return is_read_matching
 			
 			
 	def create_kmers_for_block(self, block_start, block_end, sequence):

@@ -1,20 +1,3 @@
-  11 efaecalis
-  16 sdysgalactiae
-  22 paeruginosa
-  48 senterica
-  48 spyogenes
- 113 kpneumoniae
- 114 saureus
- 226 ecoli
-
-
-Where number of strains is greater than 10.
-
-table:
-species, No samples, no. STs, % correct, Avg time
-
-
-
 # Krocus
 Given some raw uncorrected long reads, such as those from PacBio or Oxford Nanopore, calculate the multi-locus sequence type (MLST).
 

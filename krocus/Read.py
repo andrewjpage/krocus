@@ -15,6 +15,12 @@ class Read:
 	def __str__(self):
 		return '@' + self.id + '\n' + self.seq + '\n+\n' + self.qual + '\n'
 
+	def reverse_complement_sequence(self):
+		return self.seq.translate(str.maketrans("ATCGatcg", "TAGCtagc"))[::-1]
+
+	def reverse_read(self):
+		return Read(id = self.id+"_reverse", seq = self.reverse_complement_sequence(), qual = self.qual)
+
 	def get_next_from_file(self, f):
 		line = f.readline()
 		
