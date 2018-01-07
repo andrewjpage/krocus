@@ -29,7 +29,7 @@ class Fastq:
 		self.start_time = start_time
 		self.min_kmers_for_onex_pass = min_kmers_for_onex_pass
 
-	def initial_read_filter(self):
+	def read_filter_and_map(self):
 		counter = 0 
 		match_counter = 0
 		
@@ -40,20 +40,20 @@ class Fastq:
 			counter += 1
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
-				
-			if self.does_read_contain_quick_pass_kmers(read.seq):
-				if self.map_kmers_to_read(read.seq, read):
-					# the read mapped in one direction so lets skip to the next read.
-					continue
-			
-			# reads can go both ways, so check each orientation
-			reverse_read = read.reverse_read()
-			if self.does_read_contain_quick_pass_kmers(reverse_read.seq):
-				self.map_kmers_to_read(reverse_read.seq, reverse_read)
+
+			self.map_read(read)
+			self.map_read(read.reverse_read())
 				
 		self.full_gene_coverage(counter)
 								
 		return self
+		
+	def map_read(self, read):
+		if self.does_read_contain_quick_pass_kmers(read.seq):
+			self.map_kmers_to_read(read.seq, read)
+			return True
+		else:
+			return False
 		
 	def does_read_contain_quick_pass_kmers(self, sequence):
 		seq_length = len(sequence)
@@ -74,7 +74,17 @@ class Fastq:
 		
 		return False
 		
-	def map_kmers_to_read(self, sequence,read):			
+		
+	def put_kmers_in_read_bins(self, seq_length, end, fasta_kmers, read_kmers):
+		sequence_hits = numpy.zeros(int(seq_length/self.k)+1, dtype=int)
+		hit_counter = 0
+		for i in range(0, end):
+			if read_kmers[i] in fasta_kmers:
+				hit_counter += 1
+				sequence_hits[int(i/self.k)] += 1
+		return sequence_hits, hit_counter
+		
+	def map_kmers_to_read(self, sequence, read):			
 		seq_length = len(sequence)
 		end = seq_length - self.k
 		
@@ -83,34 +93,31 @@ class Fastq:
 		is_read_matching = False
 		
 		for (fasta_obj, fasta_kmers) in self.fasta_kmers.items():
-			
-			sequence_hits = numpy.zeros(int(seq_length/self.k)+1, dtype=int)
-			hit_counter = 0
-			for i in range(0, end):
-				if read_kmers[i] in fasta_kmers:
-					hit_counter += 1
-					sequence_hits[int(i/self.k)] += 1
+			sequence_hits, hit_counter = self.put_kmers_in_read_bins( seq_length, end, fasta_kmers, read_kmers)
 			
 			if hit_counter < self.min_fasta_hits:
 				continue
 				
 			blocks_obj = Blocks(self.k, self.min_block_size, self.max_gap, self.margin)
 			block_start, block_end = blocks_obj.find_largest_block(sequence_hits)
-			block_start = blocks_obj.adjust_block_start(block_start)
-
 			if block_end == 0:
 				continue
-			block_end = blocks_obj.adjust_block_end(block_end,seq_length)
+				
+			block_start = blocks_obj.adjust_block_start(block_start)
+			block_end = blocks_obj.adjust_block_end(block_end, seq_length)
 
 			block_kmers = self.create_kmers_for_block(block_start, block_end, sequence)
 			self.apply_kmers_to_genes(fasta_obj,block_kmers)
 			is_read_matching = True
 			
 			if self.filtered_reads_file:
-				with open(self.filtered_reads_file, 'a+') as output_fh:
-					output_fh.write(str(read.subsequence(block_start, block_end)))
+				self.append_subread_to_fastq_file(read, block_start, block_end)
+				
 		return is_read_matching
 			
+	def append_subread_to_fastq_file(self, read, block_start, block_end):
+			with open(self.filtered_reads_file, 'a+') as output_fh:
+				output_fh.write(str(read.subsequence(block_start, block_end)))
 			
 	def create_kmers_for_block(self, block_start, block_end, sequence):
 		if block_end ==  0:
@@ -134,21 +141,21 @@ class Fastq:
 			largest_gene = 0
 			largest_gene_name = ''
 			largest_zero = 0
-			largest_average_kmer_coverage = 0
+			largest_sum_kmer_coverage = 0
 			for (gene_name, kmers_dict) in fasta_obj.sequences_to_kmers.items():
 				kv = kmers_dict.values()
 				
-				average_kmer_coverage = sum(kv)/len(kv)
-				
+				sum_kmer_coverage = sum(kv)
+
 				kv_coverage = [x for x in kv if x >= 1]
 				kv_zero = [x for x in kv if x == 0]
 				kl  = len(kv_coverage)
 				kz = len(kv_zero)
-				if kl >= largest_gene and average_kmer_coverage > largest_average_kmer_coverage:
+				if kl >= largest_gene and sum_kmer_coverage > largest_sum_kmer_coverage:
 					largest_gene = kl
 					largest_gene_name = gene_name
 					largest_zero = kz
-					largest_average_kmer_coverage = average_kmer_coverage
+					largest_sum_kmer_coverage = sum_kmer_coverage
 	
 			if largest_gene_name != '':
 				alleles.append(Gene(largest_gene_name, largest_gene, largest_zero))

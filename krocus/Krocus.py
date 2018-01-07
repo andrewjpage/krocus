@@ -41,7 +41,7 @@ class Krocus:
 		mlst_profile = MlstProfile(self.mlst_profile_file())
 		fastas = Fastas(self.logger, self.allele_directory, self.kmer,self.divisible_by_3)
 		fastq = Fastq(self.logger, self.input_fastq, self.kmer, fastas.get_fastas_to_kmers(), self.min_fasta_hits , mlst_profile, self.print_interval, self.output_file, self.filtered_reads_file, target_st = self.target_st, max_gap = self.max_gap, min_block_size = self.min_block_size, margin = self.margin, start_time = self.start_time)
-		fastq.initial_read_filter()
+		fastq.read_filter_and_map()
 
 	def mlst_profile_file(self):
 		profile_txt = os.path.join(self.allele_directory, 'profile.txt')
