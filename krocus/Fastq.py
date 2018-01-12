@@ -12,7 +12,7 @@ import sys
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0, min_kmers_for_onex_pass = 1, max_kmers = 5 ):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0, min_kmers_for_onex_pass = 10, max_kmers = 5 ):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -42,8 +42,8 @@ class Fastq:
 			if counter % self.print_interval == 0:
 				self.full_gene_coverage(counter)
 
-			self.map_read(read)
-			self.map_read(read.reverse_read())
+			if not self.map_read(read):
+				self.map_read(read.reverse_read())
 				
 		self.full_gene_coverage(counter)
 								
@@ -72,7 +72,7 @@ class Fastq:
 			
 					if hit_counter > self.min_kmers_for_onex_pass:
 						return True
-		
+
 		return False
 		
 		
@@ -129,15 +129,13 @@ class Fastq:
 		
 		block_seq = sequence[block_start:block_end]
 			
-		kmers_obj = Kmers(block_seq, self.k)
-		return kmers_obj.get_all_kmers(self.max_kmers)
+		return Kmers(block_seq, self.k).get_all_kmers(self.max_kmers)
 	
-		# {'gene1': {'AAAA': 1}, 'gene2': {'TTTT': 1}, 'gene3': {'CCCC': 1}}
 	def apply_kmers_to_genes(self,fasta_obj,hit_kmers):
 		for (gene_name, kmers_dict) in fasta_obj.sequences_to_kmers.items():
 			for kmer in kmers_dict.keys():
 				if kmer in hit_kmers:
-					fasta_obj.sequences_to_kmers[gene_name][kmer] += 1 
+					fasta_obj.sequences_to_kmers[gene_name][kmer] += 1 		
 		
 	def full_gene_coverage(self, counter):
 		alleles = []
