@@ -12,7 +12,7 @@ import sys
 class Error (Exception): pass
 
 class Fastq:
-	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0, min_kmers_for_onex_pass = 1 ):
+	def __init__(self,logger, filename, k, fasta_kmers, min_fasta_hits, mlst_profile, print_interval, output_file, filtered_reads_file, target_st = None, max_gap = 4, min_block_size = 150, margin = 100, start_time = 0, min_kmers_for_onex_pass = 1, max_kmers = 5 ):
 		self.logger = logger
 		self.filename = filename
 		self.k = k
@@ -28,6 +28,7 @@ class Fastq:
 		self.margin = margin
 		self.start_time = start_time
 		self.min_kmers_for_onex_pass = min_kmers_for_onex_pass
+		self.max_kmers = max_kmers
 
 	def read_filter_and_map(self):
 		counter = 0 
@@ -78,18 +79,21 @@ class Fastq:
 	def put_kmers_in_read_bins(self, seq_length, end, fasta_kmers, read_kmers):
 		sequence_hits = numpy.zeros(int(seq_length/self.k)+1, dtype=int)
 		hit_counter = 0
-		for i in range(0, end):
-			if read_kmers[i] in fasta_kmers:
-				hit_counter += 1
-				sequence_hits[int(i/self.k)] += 1
+		
+		for read_kmer, read_kmer_hit in read_kmers.items():
+			if read_kmer in fasta_kmers:
+				for coordinate in read_kmer_hit.coordinates:
+					hit_counter += 1
+					sequence_hits[int(coordinate/self.k)] += 1
 		return sequence_hits, hit_counter
+
 		
 	def map_kmers_to_read(self, sequence, read):			
 		seq_length = len(sequence)
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
-		read_kmers = kmers_obj.get_all_kmers_array()
+		read_kmers = kmers_obj.get_all_kmers_filtered(self.max_kmers)
 		is_read_matching = False
 		
 		for (fasta_obj, fasta_kmers) in self.fasta_kmers.items():
@@ -126,7 +130,7 @@ class Fastq:
 		block_seq = sequence[block_start:block_end]
 			
 		kmers_obj = Kmers(block_seq, self.k)
-		return kmers_obj.get_all_kmers()
+		return kmers_obj.get_all_kmers(self.max_kmers)
 	
 		# {'gene1': {'AAAA': 1}, 'gene2': {'TTTT': 1}, 'gene3': {'CCCC': 1}}
 	def apply_kmers_to_genes(self,fasta_obj,hit_kmers):

@@ -32,12 +32,23 @@ class TestFastq(unittest.TestCase):
 		fastq = Fastq(logger, os.path.join(data_dir,'pacbio.fastq.gz'), kmer , fastas.get_fastas_to_kmers(), 5,  mlst_profile, 100, None, None)
 		self.assertTrue(fastq.read_filter_and_map())
 
+	def test_stap_aureus_pacbio(self):
+		logger = logging.getLogger(__name__)
+		kmer = 11
+		fastas = Fastas(logger, databases+'/Staphylococcus_aureus/',kmer, False)
+		mlst_profile = MlstProfile(databases+'/Staphylococcus_aureus/profile.txt')
+		
+		fastq = Fastq(logger, os.path.join(data_dir,'NCTC11150.fastq.gz'), kmer , fastas.get_fastas_to_kmers(), 10,  mlst_profile, 500, None, None, max_kmers = 1)
+		self.assertTrue(fastq.read_filter_and_map())
+
+
+
 	def test_kp_nanopore(self):
 		logger = logging.getLogger(__name__)
 		kmer = 11
 		fastas = Fastas(logger, databases+'/Klebsiella_pneumoniae/',kmer, False)
 		mlst_profile = MlstProfile(databases+'/Klebsiella_pneumoniae/profile.txt')
-
 		
 		fastq = Fastq(logger, os.path.join(data_dir,'nanopore_kp_12.fastq.gz'), kmer , fastas.get_fastas_to_kmers(), 10,  mlst_profile, 500, None, None)
 		self.assertTrue(fastq.read_filter_and_map())
+

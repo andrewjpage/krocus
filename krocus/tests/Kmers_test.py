@@ -10,9 +10,9 @@ class TestKmers(unittest.TestCase):
 
 	def test_four_kmers(self):
 		k = Kmers('AAAAATTTTT',4)
-		self.assertEqual(k.get_all_kmers(), {'AAAA': 0, 'AAAT': 0, 'AATT': 0, 'ATTT': 0, 'TTTT': 0})
+		self.assertEqual(k.get_all_kmers_counter(), {'AAAA': 0, 'AAAT': 0, 'AATT': 0, 'ATTT': 0, 'TTTT': 0})
 		
 	def test_short_sequence(self):
 		k = Kmers('A',10)
-		self.assertEqual(k.get_all_kmers(),{})
+		self.assertEqual(k.get_all_kmers_counter(),{})
 		

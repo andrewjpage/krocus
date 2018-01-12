@@ -25,7 +25,7 @@ class Fasta:
 			
 			kmers = Kmers(str(record.seq), self.k)
 			# We assume here that the sequence name is unique in the FASTA file
-			kmer_to_sequences[record.id] = kmers.get_all_kmers()
+			kmer_to_sequences[record.id] = kmers.get_all_kmers_counter()
 			
 			seq_counter += 1
 			
