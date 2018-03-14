@@ -5,7 +5,7 @@ class InputTypes:
 	
 	'''The input file should exist'''
 	def is_fastq_file_valid(filename):
-		if not os.path.exists(filename):
+		if not os.path.exists(filename) and filename != "-":
 			raise argparse.ArgumentTypeError('Cannot access input file')
 		return filename
 		
