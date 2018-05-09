@@ -6,15 +6,28 @@ Given some raw uncorrected long reads, such as those from PacBio or Oxford Nanop
 # Installation
 The only dependancy is Python3. Assuming you have python 3.3+ and pip installed, just run:
 ```
+pip3 install krocus
+```
+
+or if you wish to install the latest development version:
+```
 pip3 install git+git://github.com/andrewjpage/krocus.git
 ```
+
+On some systems pip3 may be just called pip.
 
 ## Debian/Ubuntu (Trusty/Xenial)
 To install Python3 on Ubuntu, as root run:
 ```
 apt-get update -qq
 apt-get install -y git python3 python3-setuptools python3-biopython python3-pip
-pip3 install git+git://github.com/andrewjpage/krocus.git
+pip3 install krocus
+```
+
+## Conda
+First install Conda (Python3), then run:
+```
+conda install  krocus
 ```
 
 ## Windows

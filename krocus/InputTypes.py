@@ -11,7 +11,7 @@ class InputTypes:
 		
 	def is_allele_directory_valid(filename):
 		if not os.path.exists(filename):
-			raise argparse.ArgumentTypeError("The output directory already exists")
+			raise argparse.ArgumentTypeError("The allele directory doesnt exist")
 		return filename
 		
 	def is_kmer_valid(value_str):
