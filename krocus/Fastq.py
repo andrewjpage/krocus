@@ -139,7 +139,9 @@ class Fastq:
 		
 	def full_gene_coverage(self, counter):
 		alleles = []
+		num_alleles = 0
 		for fasta_obj in self.fasta_kmers.keys():
+			num_alleles += 1 
 			largest_gene = 0
 			largest_gene_name = ''
 			largest_zero = 0
@@ -163,10 +165,21 @@ class Fastq:
 				alleles.append(Gene(largest_gene_name, largest_gene, largest_zero))
 			
 		gene_to_allele_number = {}
+		total_kmers_with_coverage = 0
+		total_kmers_without_coverage = 0
+		num_alleles_counted = 0;
 		for a in alleles:
+			num_alleles_counted += 1
+			total_kmers_with_coverage += a.kmers_with_coverage
+			total_kmers_without_coverage += a.kmers_without_coverage
 			gene_to_allele_number[a.allele_name()] = a.allele_number()
+			
+		confidence_score = 0
+		if total_kmers_with_coverage + total_kmers_without_coverage > 0 and num_alleles_counted > 0 and num_alleles > 0 :
+			confidence_score = (total_kmers_with_coverage/(total_kmers_with_coverage + total_kmers_without_coverage))* (num_alleles_counted/num_alleles)*100
+			
 		st = self.mlst_profile.get_sequence_type(gene_to_allele_number)
-		self.output_st_and_alleles(st, alleles)
+		self.output_st_and_alleles(st, alleles, confidence_score)
 		self.output_target_st(st, counter)
 		
 	def output_target_st(self,st,counter):
@@ -186,8 +199,8 @@ class Fastq:
 			# Stop once we have the target ST
 			sys.exit(0)
 		
-	def output_st_and_alleles(self, st, alleles):
-		allele_string = str(st)+"\t" 
+	def output_st_and_alleles(self, st, alleles, confidence_score):
+		allele_string = str(st)+"\t"+ str( '%.2f' % confidence_score) + "\t"
 		for a in alleles:
 			allele_string += str(a)+"\t"		
 		if self.output_file:

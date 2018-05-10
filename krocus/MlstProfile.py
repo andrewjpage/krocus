@@ -57,5 +57,5 @@ class MlstProfile:
         if 'ND' in key:
             return 'ND'
         else:
-            return self.profile_to_type.get(key, 'Novel')
+            return self.profile_to_type.get(key, 'ND')
 
