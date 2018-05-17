@@ -9,7 +9,7 @@ ncbi-genome-download --format fasta --assembly-level complete --genus "Escherich
 krocus_database_downloader -s "Escherichia coli#1" -o ecoli
 
 declare -a errormodels=("ecoli_R9_1D" "ecoli_R9_2D")
-READS=10000
+READS=20000
 
 cd refseq/bacteria
 for i in $( ls -d * ); do 
