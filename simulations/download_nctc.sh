@@ -1,4 +1,8 @@
 #!/bin/bash
+if test "$#" -ne 1; then
+    echo "Please provide an accession number in the format ERRXXXXXX"
+fi
+
 # Raw data accession number such as ERR1466818
 ERRACCESSION=$1
 
@@ -9,8 +13,8 @@ conda install -c bioconda pbh5tools krocus mlst
 wget http://sra-download.ncbi.nlm.nih.gov/srapub_files/${ERRACCESSION}_${ERRACCESSION}_hdf5.tgz
 
 # unzip
-tar -xvfz ${ERRACCESSION}_${ERRACCESSION}_hdf5.tgz
+tar -zxvf ${ERRACCESSION}_${ERRACCESSION}_hdf5.tgz
 
 # convert 
-bash5tools.py --outFilePrefix ${ERRACCESSION} --outType fastq --readType Raw *.bas.h5 
+bash5tools.py --outFilePrefix ${ERRACCESSION} --outType fastq *.bas.h5 
 
