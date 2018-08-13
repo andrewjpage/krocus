@@ -24,6 +24,7 @@ class Krocus:
 		self.start_time                 = int(time.time())
 		self.divisible_by_3             = options.divisible_by_3
 		self.min_kmers_for_onex_pass    = options.min_kmers_for_onex_pass
+		self.max_kmers                  = options.max_kmers
 		
 		if self.output_file and os.path.exists(self.output_file):
 			self.logger.error("The output file already exists, please choose another filename: "+ self.output_file)
@@ -40,8 +41,8 @@ class Krocus:
 			
 	def run(self):
 		mlst_profile = MlstProfile(self.mlst_profile_file())
-		fastas = Fastas(self.logger, self.allele_directory, self.kmer,self.divisible_by_3)
-		fastq = Fastq(self.logger, self.input_fastq, self.kmer, fastas.get_fastas_to_kmers(), self.min_fasta_hits , mlst_profile, self.print_interval, self.output_file, self.filtered_reads_file, target_st = self.target_st, max_gap = self.max_gap, min_block_size = self.min_block_size, margin = self.margin, start_time = self.start_time, min_kmers_for_onex_pass = self.min_kmers_for_onex_pass)
+		fastas = Fastas(self.logger, self.allele_directory, self.kmer,self.divisible_by_3, max_kmers = self.max_kmers)
+		fastq = Fastq(self.logger, self.input_fastq, self.kmer, fastas.get_fastas_to_kmers(), self.min_fasta_hits , mlst_profile, self.print_interval, self.output_file, self.filtered_reads_file, target_st = self.target_st, max_gap = self.max_gap, min_block_size = self.min_block_size, margin = self.margin, start_time = self.start_time, min_kmers_for_onex_pass = self.min_kmers_for_onex_pass, max_kmers = self.max_kmers)
 		fastq.read_filter_and_map()
 
 	def mlst_profile_file(self):

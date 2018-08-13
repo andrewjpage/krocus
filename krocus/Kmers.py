@@ -2,7 +2,7 @@
 
 class KmerHit():
 	def __init__(self,count, coord):
-		self.count = 0
+		self.count = count
 		self.coordinates = [coord]
 
 
@@ -14,6 +14,10 @@ class Kmers:
 	def get_all_kmers_counter(self, max_kmer_count = 1):
 		kmers = self.get_all_kmers_filtered(max_kmer_count)
 		return { x:0 for x in kmers.keys()}
+		
+	def get_all_kmers_freq(self, max_kmer_count = 10):
+		kmers = self.get_all_kmers_filtered(max_kmer_count)
+		return { k:v.count for k,v in kmers.items()}
 
 	def get_all_kmers(self, max_kmer_count = 1):
 		return self.get_all_kmers_filtered(max_kmer_count)
