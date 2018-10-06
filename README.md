@@ -4,7 +4,7 @@ Genome sequencing is rapidly being adopted in reference labs and hospitals for b
 [![Build Status](https://travis-ci.org/andrewjpage/krocus.svg?branch=master)](https://travis-ci.org/andrewjpage/krocus)
 
 # Paper
-"Rapid multi-locus sequence typing direct from uncorrected long reads using Krocus", Andrew J. Page, Jacqueline A. Keane, bioRxiv 259150; (2018) doi: https://doi.org/10.1101/259150
+Andrew J. Page, Jacqueline A. Keane. (2018) Rapid multi-locus sequence typing direct from uncorrected long reads using Krocus. PeerJ 6:e5233 https://doi.org/10.7717/peerj.5233
 
 # Installation
 The only dependancy is Python3. Assuming you have python 3.3+ and pip installed, just run:

@@ -29,6 +29,7 @@ class Fastq:
 		self.start_time = start_time
 		self.min_kmers_for_onex_pass = min_kmers_for_onex_pass
 		self.max_kmers = max_kmers
+		
 
 	def read_filter_and_map(self):
 		counter = 0 
@@ -93,7 +94,7 @@ class Fastq:
 		end = seq_length - self.k
 		
 		kmers_obj = Kmers(sequence, self.k)
-		read_kmers = kmers_obj.get_all_kmers_filtered(self.max_kmers)
+		read_kmers = kmers_obj.get_all_kmers_filtered(max_kmer_count = self.max_kmers)
 		is_read_matching = False
 		
 		for (fasta_obj, fasta_kmers) in self.fasta_kmers.items():
@@ -129,13 +130,15 @@ class Fastq:
 		
 		block_seq = sequence[block_start:block_end]
 			
-		return Kmers(block_seq, self.k).get_all_kmers(self.max_kmers)
+		return Kmers(block_seq, self.k).get_all_kmers(max_kmer_count = self.max_kmers)
 	
 	def apply_kmers_to_genes(self,fasta_obj,hit_kmers):
 		for (gene_name, kmers_dict) in fasta_obj.sequences_to_kmers.items():
+			
 			for kmer in kmers_dict.keys():
 				if kmer in hit_kmers:
-					fasta_obj.sequences_to_kmers[gene_name][kmer] += 1 		
+					if fasta_obj.sequences_to_kmers_count[gene_name][kmer] > 0:	
+						fasta_obj.sequences_to_kmers[gene_name][kmer] += 1 / fasta_obj.sequences_to_kmers_count[gene_name][kmer]	
 		
 	def full_gene_coverage(self, counter):
 		alleles = []
