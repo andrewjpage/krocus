@@ -7,7 +7,7 @@ fi
 ERRACCESSION=$1
 
 # ensure tools are installed
-conda install -c bioconda pbh5tools krocus mlst
+conda install -c bioconda pbh5tools
 
 # Download the raw data
 wget http://sra-download.ncbi.nlm.nih.gov/srapub_files/${ERRACCESSION}_${ERRACCESSION}_hdf5.tgz
