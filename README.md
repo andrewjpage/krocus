@@ -119,12 +119,12 @@ __output_file__: By default the predicted sequence types are printed to screen (
 __print_interval__: Print out the predicted sequence type every X number of reads. This is where you are performing analysis in real time and want a quick result.
 
 # Output
-The output format is: the predicted sequence type (ST) number (column 1), the percentage k-mer coverage of the alleles (0-100) (column 2), the specific alleles identified. For each allele the name of the gene is noted and the allele number, which corresponds to a unique sequence, is given in brackets. If there is only a partial match a start (*) is appended.
+The output format is: the predicted sequence type (ST) number (column 1), the percentage k-mer coverage of the alleles (0-100) (column 2), the specific alleles identified. For each allele the name of the gene is noted and the allele number, which corresponds to a unique sequence, is given in brackets. If there is only a partial match a star (*) is appended.
 
 ```
 323	97.23	infB(1)	pgi(1)	phoE(9)*	tonB(93)	rpoB(1)*	gapA(2)	mdh(1)
 ```
-In the above example the sequence type is 323,and 97.23% of k-mers making up 323 are covered by reads. 2 of the alleles are have k-mers which were not identified in the reads, possibly due to errors in the reads encountered or no reads covering that region were found. 
+In the above example the sequence type is 323,and 97.23% of k-mers making up 323 are covered by reads. 2 of the alleles have k-mers which were not identified in the reads, possibly due to errors in the reads encountered or no reads covering that region were found. 
 
 
 
