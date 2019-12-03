@@ -118,6 +118,14 @@ __output_file__: By default the predicted sequence types are printed to screen (
 
 __print_interval__: Print out the predicted sequence type every X number of reads. This is where you are performing analysis in real time and want a quick result.
 
+# Streaming data in real-time
+If you wish to analyse data in real-time as its produced (for example as it is sequenced from a minION) you can pipe the data in, using the dash as the input file name. This is an example command:
+```
+tail -f reads.fastq | krocus dir -
+```
+If you are impatient you can get it to print results at shorter intervals by setting the parameter '-p 10'.
+
+
 # Output
 The output format is: the predicted sequence type (ST) number (column 1), the percentage k-mer coverage of the alleles (0-100) (column 2), the specific alleles identified. For each allele the name of the gene is noted and the allele number, which corresponds to a unique sequence, is given in brackets. If there is only a partial match a star (*) is appended.
 
