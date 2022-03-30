@@ -19,7 +19,7 @@ except pkg_resources.DistributionNotFound:
 	version = 'x.y.z'
 
 parser = argparse.ArgumentParser(
-	description = 'Download ',
+	description = 'Download databases from PubMLST\nPlease cite:\nhttps://wellcomeopenresearch.org/articles/3-124/v1 and https://doi.org/10.7717/peerj.5233',
 	usage = 'krocus_database_downloader [options]',
 	formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 

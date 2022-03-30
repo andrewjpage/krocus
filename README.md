@@ -4,7 +4,11 @@ Genome sequencing is rapidly being adopted in reference labs and hospitals for b
 [![Build Status](https://travis-ci.org/andrewjpage/krocus.svg?branch=master)](https://travis-ci.org/andrewjpage/krocus)
 
 # Paper
+If you find this software useful, please cite:
 Andrew J. Page, Jacqueline A. Keane. (2018) Rapid multi-locus sequence typing direct from uncorrected long reads using Krocus. PeerJ 6:e5233 https://doi.org/10.7717/peerj.5233
+
+Also please consider citing the PubMLST databases that are needed to make Krocus work:
+Keith A. Jolley, James E. Bray, Martin C. J. Maiden. (2018) Open-access bacterial population genomics: BIGSdb software, the PubMLST.org website and their applications. Wellcome Open Research. 3:124 https://doi.org/10.12688/wellcomeopenres.14826.1
 
 # Installation
 The only dependancy is Python3. Assuming you have python 3.3+ and pip installed, just run:
