@@ -74,11 +74,16 @@ class PubmlstGetter:
 
         locus_list = species_dict[species].find('mlst').find('database').find('loci').findall('locus')
         fasta_urls = [x.find('url').text for x in locus_list]
+        locus_names = [x.text.strip() for x in locus_list]
+
+        if self.verbose:
+            print("Alleles found:")
+            print(locus_names)
 
         if len(fasta_urls) == 0:
             raise Error('Error! No fasta files found for species ' + species + '. Cannot continue')
 
-        return profile_url, fasta_urls
+        return profile_url, fasta_urls, locus_names
 
 
     @classmethod
@@ -100,7 +105,7 @@ class PubmlstGetter:
         pyfastaq.utils.close(f)
 
 
-    def _download_profile_and_fastas(self, outdir, profile_url, fasta_urls):
+    def _download_profile_and_fastas(self, outdir, profile_url, fasta_urls, locus_names):
         try:
             os.mkdir(outdir)
         except:
@@ -109,8 +114,8 @@ class PubmlstGetter:
         profile_outfile = os.path.join(outdir, 'profile.txt')
         self._download_file(profile_url, profile_outfile)
 
-        for fasta_url in fasta_urls:
-            outfile = os.path.join(outdir, fasta_url.split('/')[-1])
+        for index, fasta_url in enumerate(fasta_urls):
+            outfile = os.path.join(outdir, locus_names[index] + '.tfa')
             self._download_file(fasta_url, outfile + '.tmp')
             PubmlstGetter._rename_seqs_in_fasta(outfile + '.tmp', outfile)
             os.unlink(outfile + '.tmp')
@@ -122,5 +127,5 @@ class PubmlstGetter:
 
 
     def get_species_files(self, species, outdir):
-        profile_url, fasta_urls = self._get_profile_and_fasta_urls(species)
-        self._download_profile_and_fastas(outdir, profile_url, fasta_urls)
+        profile_url, fasta_urls, locus_names = self._get_profile_and_fasta_urls(species)
+        self._download_profile_and_fastas(outdir, profile_url, fasta_urls, locus_names)
